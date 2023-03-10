@@ -39,7 +39,7 @@ function defaultTest () {
     )
     TEST_LIST=(
         "$( curl -i $IP:$PORT 2> /dev/null | sed -n '1p' | sed 's/.$//' )"
-        "$( curl -i $IP:$PORT/no_ERROR 2> /dev/null | sed -n '1p' | sed 's/.$//' )"
+        "$( curl -i $IP:$PORT/no_page 2> /dev/null | sed -n '1p' | sed 's/.$//' )"
     )
 
     ITER=0
