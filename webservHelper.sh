@@ -13,37 +13,37 @@ URI=""
 # Browser full path
 Browser="/Applications/Firefox.app/Contents/MacOS/firefox"
 
-SERVER=""
+# test list response
+TEST_LIST_RESPONSE=(
+            "HTTP/1.1 200 OK"
+            "HTTP/1.1 404 Not Found"
+)
+
+# test list uri
+TEST_LIST_URI=(
+                ""
+                "no_nage"
+)
 
 # if IP is `null` get host address
 if [[ -z "${IP}" ]]; then
     IP=$(ifconfig | grep 'inet ' | grep bro | awk '{ print($2) }')
 fi
+
 SERVER="\"http://$IP:$PORT/$URI\""
-
-
 
 function defaultTest () {
 
     printf "Clients number: $ClientNumber\n"
     printf "URL used in browser: $SERVER\n\n"
 
-    RES_LIST=(
-                "HTTP/1.1 200 OK"
-                "HTTP/1.1 404 Not Found"
-    )
-    TEST_LIST_URI=(
-                    ""
-                    "no_nage"
-    )
-
     ITER=0
     VAL=""
     for VAL in "${TEST_LIST_URI[@]}"; do
 
         TEST="$( curl -i $IP:$PORT/$VAL 2> /dev/null | sed -n '1p' | sed 's/.$//' )"
-        [[ "$TEST" == "${RES_LIST[$ITER]}" ]] && printf "\e[32mOK\e[00m\t\t" || printf "\e[31mNO\e[00m\t\t" 
-        printf "\e[33m${RES_LIST[$ITER]}\e[0m\n"
+        [[ "$TEST" == "${TEST_LIST_RESPONSE[$ITER]}" ]] && printf "\e[32mOK\e[00m\t\t" || printf "\e[31mNO\e[00m\t\t" 
+        printf "\e[33m${TEST_LIST_RESPONSE[$ITER]}\e[0m\n"
         ITER=$(( ITER + 1 ))
     done
 }
