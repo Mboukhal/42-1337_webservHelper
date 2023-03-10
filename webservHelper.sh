@@ -14,15 +14,13 @@ URI=""
 Browser="/Applications/Firefox.app/Contents/MacOS/firefox"
 
 SERVER=""
-function getIp() {
 
-    # if IP is `null` get host address
-    if [[ -z "${IP}" ]]; then
-        IP=$(ifconfig | grep 'inet ' | grep bro | awk '{ print($2) }')
-    fi
-    SERVER="\"http://$IP:$PORT/$URI\""
-}
-getIp
+# if IP is `null` get host address
+if [[ -z "${IP}" ]]; then
+    IP=$(ifconfig | grep 'inet ' | grep bro | awk '{ print($2) }')
+fi
+SERVER="\"http://$IP:$PORT/$URI\""
+
 
 
 function defaultTest () {
@@ -44,11 +42,15 @@ function defaultTest () {
     for VAL in "${TEST_LIST_URI[@]}"; do
 
         TEST="$( curl -i $IP:$PORT/$VAL 2> /dev/null | sed -n '1p' | sed 's/.$//' )"
-        [[ "$TEST" == "${RES_LIST[$ITER]}" ]] && printf "OK\t\t" || printf "NO\t\t" 
-        printf "${RES_LIST[$ITER]}\n"
+        [[ "$TEST" == "${RES_LIST[$ITER]}" ]] && printf "\e[32mOK\e[00m\t\t" || printf "\e[31mNO\e[00m\t\t" 
+        printf "\e[33m${RES_LIST[$ITER]}\e[0m\n"
         ITER=$(( ITER + 1 ))
     done
 }
+
+ping -c 1 $IP 2> /dev/null > /dev/null
+ERR="$?"
+[[ "$ERR" -eq "0" ]] || printf "\e[31mServer [$IP:$PORT] is not available!\n\e[00m" || exit "$ERR"
 
 CMD_ARGS="$Browser $SERVER"
 
