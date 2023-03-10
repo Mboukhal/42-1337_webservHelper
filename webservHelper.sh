@@ -65,7 +65,7 @@ done
 
 while [ 1 ]; do
 
-    [[ "$ClientNumber" -ne "0" ]] && bash -c "$CMD_ARGS"  &> /dev/null &
+    [[ "$ClientNumber" -ne "0" ]] && $(bash -c "$CMD_ARGS"  &> /dev/null &)
     clear
     defaultTest
     printf "\nEnter [q] to quit,\n[default] reset browser: "
