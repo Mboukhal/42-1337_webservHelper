@@ -1,6 +1,7 @@
 #!/bin/bash
 
 # number of tabs you want to open
+# or `0` for default test
 ClientNumber=10
 
 # if you want to use your own interface ip, you can leave this empty
@@ -23,31 +24,27 @@ function getIp() {
 }
 getIp
 
-if [ "${ClientNumber}" -eq "0" ]; then
-
-    echo "Client number can't be less then \`1\`!"
-    exit 1
-fi
 
 function defaultTest () {
 
     printf "Clients number: $ClientNumber\n"
     printf "URL used in browser: $SERVER\n\n"
+
     RES_LIST=(
-        "HTTP/1.1 200 OK"
-        "HTTP/1.1 404 Not Found"
+                "HTTP/1.1 200 OK"
+                "HTTP/1.1 404 Not Found"
     )
-    TEST_LIST=(
-        "$( curl -i $IP:$PORT 2> /dev/null | sed -n '1p' | sed 's/.$//' )"
-        "$( curl -i $IP:$PORT/no_page 2> /dev/null | sed -n '1p' | sed 's/.$//' )"
+    TEST_LIST_URI=(
+                    ""
+                    "no_nage"
     )
 
     ITER=0
-    TEST_ITER=""
     VAL=""
-    for VAL in "${TEST_LIST[@]}"; do
+    for VAL in "${TEST_LIST_URI[@]}"; do
 
-        [[ "$VAL" == "${RES_LIST[$ITER]}" ]] && printf "OK\t\t" || printf "NO\t\t" 
+        TEST="$( curl -i $IP:$PORT/$VAL 2> /dev/null | sed -n '1p' | sed 's/.$//' )"
+        [[ "$TEST" == "${RES_LIST[$ITER]}" ]] && printf "OK\t\t" || printf "NO\t\t" 
         printf "${RES_LIST[$ITER]}\n"
         ITER=$(( ITER + 1 ))
     done
@@ -67,7 +64,9 @@ while [ $ClientNumber -ne $i ]; do
 done
 
 while [ 1 ]; do
-    bash -c "$CMD_ARGS"  2> /dev/null 1> /dev/null &
+    if [[ $ClientNumber -ne 0 ]]; then
+        bash -c "$CMD_ARGS"  2> /dev/null 1> /dev/null &
+    fi
     clear
     defaultTest
     printf "\nEnter [q] to quit,\n[default] reset browser: "
